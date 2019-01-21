@@ -16,5 +16,5 @@ The boring stuff: <b>"Use it at your own risk!"</b> I have +200 <i>items</i> and
 </div>
 
 
-Best Regards
+Best Regards<br>
 Pete<i>R</i>
