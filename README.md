@@ -2,7 +2,7 @@
 The text below is copied from the self explanatory script:
 -------------------------------------------------------------------
 
-OpenHAB REST Export/Import for Items and Links
+OpenHAB REST Exporter/Importer for Items and Links
 <div>
 This page will allow you to make <b>all</b> your <i>items</i> editable (RW) in a couple of minutes. It doesn't matter if <i>items</i> are created in <a href="/paperui/" target="_blank">PaperUI</a>, <a href="/habmin/" target="_blank">HabMIN</a>, <i>.items</i>-files. <b>All</b> <i>items</i> will be inserted into the OpenHAB <b>JSON dB</b> and editable through <b>PaperUI</b>.<br>
 
