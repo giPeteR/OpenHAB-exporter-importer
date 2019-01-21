@@ -12,7 +12,7 @@ The main purpouse is adding <a href="https://www.openhab.org/docs/ecosystem/goog
 I'm using OH2 <a href="https://www.openhab.org/docs/installation/linux.html#file-locations" target="_blank">aliases</a> mapped to <i>/srv/</i> instead of hard paths, which makes it less platform dependent.<br><br>
 </div>
 <div>
-The boring stuff: <b>"Use it at your own risk!"</b> I have +200 <i>items</i> and used this method 20 times now, rebooted plenty, tested again... but it may behave differently at your system.<br>
+The boring stuff: <b>"Use it at your own risk!"</b> I have +200 <i>items</i> and used this method 20 times now, rebooted plenty, tested again... but it may behave differently at your system.<br><br>
 </div>
 
 
