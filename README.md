@@ -15,6 +15,12 @@ I'm using OH2 <a href="https://www.openhab.org/docs/installation/linux.html#file
 The boring stuff: <b>"Use it at your own risk!"</b> I have +200 <i>items</i> and used this method 20 times now, rebooted plenty, tested again... but it may behave differently at your system.<br><br>
 </div>
 
+<b>Installation:</b>
+Download .7z and extract to /srv/openhab2-conf/html
+Careful if you already have an index.html
+The script does not change anything in OH and cannot break anything. The magic happens when you import the data again.
+
+<a href="https://community.openhab.org/t/howto-move-all-items-to-json-db-for-easy-editing-in-paperui-and-tagging-for-google-home-and-alexa" target="_blank">HowTo: Move ALL items to JSON dB for easy editing in PaperUI and tagging for Google Home (and Alexa)</a>
 
 Best Regards<br>
 Pete<i>R</i>
