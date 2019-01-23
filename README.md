@@ -23,5 +23,5 @@ The script does not change anything in OH and cannot break anything. The magic h
 <h2>Please see OpenHAB forum for updated info:</h2>
 <a href="https://community.openhab.org/t/howto-move-all-items-to-json-db-for-easy-editing-in-paperui-and-tagging-for-google-home-and-alexa" target="_blank">HowTo: Move ALL items to JSON dB for easy editing in PaperUI and tagging for Google Home (and Alexa)</a>
 <br>
-Best Regards<br>
+Best Regards<br><br>
 <b>Pete<i>R</i></b>
