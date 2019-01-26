@@ -1,0 +1,50 @@
+/* =============== tag =============== */
+html {
+	background-color: rgb(255, 251, 219);
+	color: black;
+}
+
+h1 {
+	margin-bottom: 0.4em;
+}
+
+h2 {
+	margin-top: 1em;
+	margin-bottom: 0.4em;
+}
+
+div {
+	margin-top: 0.2em;
+	margin-bottom: 0.2em;
+	padding: 5px;
+	line-height: 1.4;
+}
+
+textarea {
+	display: none;
+	white-space: pre;
+	width: 90%;
+	padding: 10px 10px;
+	text-align: left;
+	background-color: lightblue;
+	margin-top: 10px;
+}
+
+
+/* =============== class =============== */
+.add {
+	background-color: rgb(200, 255, 200);
+	color: darkblue;
+}
+
+.del {
+	background-color: rgb(255, 202, 202);
+	color: darkblue;
+}
+
+.bak {
+	background-color: rgb(255, 132, 132);
+}
+
+
+/* =============== id =============== */
