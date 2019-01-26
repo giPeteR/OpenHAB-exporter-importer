@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<meta writer="PeteR 2019-01-20">
+	<title>openHAB Exporter</title>
+	<link rel="stylesheet" type="text/css" href="style.css"></head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="js/ascii-table.min.js"></script>
+	<script src="js/exportREST.js"></script>
+	<script>
+		$(document).ready(function() {
+			$("h1, h2, h3, h4, h5, h5").each(function(i) {
+				var heading = $(this);
+				var headingtext = heading.text().toLowerCase().trim().replace(/[\.,-\/#!?$%\^&\*;:{}=\-_`~()]/g,"");
+				heading.attr("id",headingtext );
+			});
+		});
+	</script>
+<body>
+<!--
+	<a href="" target="_blank"></a>
+-->
+	<h1>OpenHAB <a href="/doc/" target="_blank">REST</a> exporter/importer</h1>
+	<div>
+		This page will allow you to make <b>all</b> your <i>items</i> editable (RW) in a couple of minutes. It doesn't matter if <i>items</i> are created in <a href="/paperui/" target="_blank">PaperUI</a>, <a href="/habmin/" target="_blank">HabMIN</a>, <i>.items</i>-files. <b>All</b> <i>items</i> will be inserted into the OpenHAB <b>JSON dB</b> and editable through <b>PaperUI</b>.<br>
+		The main purpouse is adding <a href="https://www.openhab.org/docs/ecosystem/google-assistant/#google-assistant-action" target="_blank"><i>tags</i></a> enabling <a href="https://community.openhab.org/t/howto-listen-talk-to-your-home" target="_blank">Google Home</a> (and likely <a href="https://community.openhab.org/t/solved-easy-way-to-link-alexa-to-openhab" target="_blank">Alexa</a>?).<br>
+	</div>
+	<div>This is for RaspberryPi, OpenHab 2 (snapshot), SSH. It probably works for most platforms as long as you can SSH.<br>
+		I'm using OH2 <a href="https://www.openhab.org/docs/installation/linux.html#file-locations" target="_blank">aliases</a> mapped to <i>/srv/</i> instead of hard paths, which makes it less platform dependent.
+	</div>
+	<div>
+		The boring stuff: <b>"Use it at your own risk!"</b> I have +200 <i>items</i> and used this method 20 times now, rebooted plenty, tested again... but it may behave differently at your system.
+	</div>
+	<div class="bak">
+		<h2>Backup</h2>
+		I usually take a backup <i>after</i> spending days fixing a broken UPDATE or so. <b>You</b> can be smart and do a <a href="https://www.openhab.org/docs/installation/linux.html#backup-and-restore" target="_blank">backup</a> <i>before</i> proceeding below :)<br>
+		<pre>>> cd /srv/openhab2-sys/runtime/bin
+>> ./backup –full
+>> ./backup --help
+		</pre>
+	</div>
+	<div>
+		<h2>Instructions:</h2>
+		<div>
+			<b>Either copy'n'paste from this window</b> <small>(Use CTRL+A to get everything)</small>,<b> or click <i>"Open in new window"</i> and <b>Save As</b> <i>.txt/.json</i></b> (remove <i>.htm</i>)<br>
+			It's good to have an extra SSH window open all the time showing logs: <code>tail -f /var/log/syslog /srv/openhab2-logs/*.log</code>
+			<ol type="1">
+				<li>Refresh this page once! <small>(If you like me get bored of saving files, as long as you don't refresh this page everything will remain here.)</small></li>
+				<li>Save <i>itemsNameTags, itemsDelete, linksAdd, linksDelete.</i></li>
+				<li>PaperUI &#8594; System &#8594; Item Linking &#8594; Simple Mode = <b style="color:green;">ON</b> &#8594; Save!&nbsp;&nbsp;<small> (I <b>think</b> this helps to delete <i>items</i> auto-created in Simple Mode.)</small></li>
+				<li>SSH &#187; paste <b>linksDelete</b>.&nbsp;&nbsp;&nbsp;<small>First links have to be deleted.</small></li>
+				<li>SSH &#187; paste <b>itemsDelete</b>.</li>
+				<li>PaperUI &#8594; System &#8594; Item Linking &#8594; Simple Mode = <b style="color:red;">OFF</b> &#8594; Save!&nbsp;&nbsp;<small> (Not sure if an OpenHAB restart '<code>systemctl restart openhab2.service</code>' here helps with the '<i>item already added</i>'-<a href="https://github.com/eclipse/smarthome/issues/5112" target="_blank">bug</a>? I seemed to get rid of them.)</small></li>
+				<li>Open <a href="/doc/#!/items/createOrUpdateItems" target="_blank">REST PUT items</a> and paste <b>all your <i>items</i></b> (maybe with new <i>tags[...]</i>). Response should be <b>200 OK</b>.</li>
+				<li>SSH &#187; paste <b>linksAdd</b>.</li>
+				<li>Restart OpenHAB '<code>systemctl restart openhab2.service</code>' again to be sure everything works. You may still get '<i>item already added</i>'-error. IF any problems, you did the backup, right?</li>
+				<li>DONE!</li>
+			</ol>
+		Now, one important thing with Google Home is that you <b>don't</b> have to <b>expose</b> yor <i>items</i> in PaperUI &#8594; Services &#8594; IO &#8594; openHAB Cloud. (You still need the service though.)<br>
+		But you do need to toogle the state of the <i>items</i> for them to sync. (Assuming already given them correct <i>tags[]</i>.)<br>
+		I also had to <i>Factory reset</i> my GH Speakers and have them set-up again :( &nbsp;&nbsp;And <i>'Sync my devices'</i> initially only worked from the phone/tab.
+		</div>
+		<hr>
+	</div>
+
+	<div class="add">
+		<h2>All Items:</h2>
+		<div>Copy the next line and save as <b><i>items.json</i></b> &nbsp&nbsp&nbsp It contains <b>all</b> your <i>items</i>! You <i>can</i> use them later in REST to add <i>items</i> again,
+		<i style="color:red;font-size:120%;">or even better...</i></div>
+		<div><button onclick="showText('items')">Show items.json</button> <button onclick="openWindow('items','j')">Open in new Win</button></div>
+		<textarea id="items" readonly rows="2"></textarea>
+
+		<h2>All Items formatted:</h2>
+		<div><i style="color:red;font-size:160%;">...</i>Copy everything including <b>[ ]</b> and save as <b><i>itemsNameTags.json</i></b> &nbsp&nbsp&nbsp It contains <b>all</b> your <i>items</i> formatted for <b>easily</b> adding <i>tags</i>. <br>
+		Use them later in REST to add <i>items</i> again (with <a href="https://www.openhab.org/docs/ecosystem/google-assistant/#google-assistant-action" target="_blank"><i>tags</a>["Lighting"..."Switchable"]</i> etc). </div>
+		<div>The reason to break out <i>type</i> is to be able to add <a href="https://www.openhab.org/docs/concepts/units-of-measurement.html" target="_blank"><i>QuantityType</i></a>. This is handy if for example a temperature sensor only delivers a number, not (°C) or (°F).<br>
+		Example: <code>"type":"Number:Temperature"</code> &nbsp;&nbsp;<small>(It can be edited in <b>PaperUI</b> as <i>Dimension</i>.)</small></div>
+		<div><button onclick="showText('itemsNameTags')">Show itemsNameTags.json</button> <button href="" onclick="openWindow('itemsNameTags','j')">Open in new Win</button></div>
+		<textarea id="itemsNameTags" readonly rows="20"></textarea>
+
+		<h2>All Items as easy to read text:</h2>
+		<div>Only for reference, cannot be inserted as is...</div>
+		<div><button onclick="showText('itemsTxt')">Show itemsTxt.txt</button> <button href="" onclick="openWindow('itemsTxt')">Open in new Win</button></div>
+		<textarea id="itemsTxt" readonly rows="20"></textarea>
+	</div>
+
+	<div class="del">
+		<h2>All Items to DELETE:</h2>
+		<div>Copy the following <i>curl -X DELETE...</i> -lines and save them as <b><i>itemsDelete.txt</i></b></div>
+		<div><button onclick="showText('itemsDelete')">Show itemsDelete.txt</button> <button href="" onclick="openWindow('itemsDelete')">Open in new Win</button></div>
+		<textarea id="itemsDelete" readonly rows="20"></textarea>
+	</div>
+	<hr>
+	<br>
+
+	<div class="add">
+		<h2>All Links:</h2>
+		<div>Copy the next line and save as <b><i>links.json</i></b> &nbsp&nbsp&nbsp It contains <b>all</b> your links! But REST doesn't support adding multiple links, so just save the file.</div>
+		<div><button onclick="showText('links')">Show links.json</button> <button href="" onclick="openWindow('links','j')">Open in new Win</button></div>
+		<textarea id="links" readonly rows="2"></textarea>
+
+		<h2>All Links to ADD:</h2>
+		<div>Copy the following <i>curl -X PUT...</i> -lines and save them as <b><i>linksAdd.txt</i></b></div>
+		<div><button onclick="showText('linksAdd')">Show linksAdd.txt</button> <button href="" onclick="openWindow('linksAdd')">Open in new Win</button></div>
+		<textarea id="linksAdd" readonly rows="20"></textarea>
+		</div>
+
+		<div class="del">
+		<h2>All Links to DELETE:</h2>
+		<div>Copy the following <i>curl -X DELETE...</i> -lines and save them as <b><i>linksDelete.txt</i></b></div>
+		<div><button onclick="showText('linksDelete')">Show linksDelete.txt</button> <button href="" onclick="openWindow('linksDelete')">Open in new Win</button></div>
+		<textarea id="linksDelete" readonly rows="20"></textarea>
+	</div>
+	<hr>
+	<br>
+
+<!--
+	<h2>All Things:</h2>
+	<div>XXXXXXXXXXXXXXCopy the next line and save as <b><i>links.json</i></b> &nbsp&nbsp&nbsp It contains <b>all</b> your links! But REST doesn't support adding multiple links, so just save the file.</div>
+	<div><button onclick="showText('things')">Show links.json</button> <button href="" onclick="openWindow('things','j')">Open in new Win</button></div>
+	<textarea id="things" readonly rows="2"></textarea>
+-->
+
+	<hr>
+	<h3>By <a href="https://community.openhab.org/u/PeterR/" target="_blank">Pete<i>R</i></a> 2019-01-20</h3><hr>
+
+	<script>
+		// GET items ====================================================================================
+		fetch(document.location.origin + '/rest/items')
+			.then((response) => {							//	.then(function (response) {
+				let contentType = response.headers.get("content-type");
+				if (contentType && contentType.includes("application/json")) {
+					return response.json();
+				}
+				throw new TypeError("Oops, we haven't got JSON!");
+			})
+			.then(function (json) {
+				let textItems = generateItems(json);
+				document.querySelector('#items').innerHTML = textItems['items'];
+				document.querySelector('#itemsNameTags').innerHTML = textItems['itemsNameTags'];
+				document.querySelector('#itemsTxt').innerHTML = textItems['itemsTxt'];
+				document.querySelector('#itemsDelete').innerHTML = textItems['itemsDelete'];
+			})
+			.catch(function (error) {
+				let txt = "Items fetch error:' " + error + " '";
+				console.error(txt);
+				alert(txt);
+			});
+		// GET links ====================================================================================
+		fetch(document.location.origin + '/rest/links')
+			.then((response) => {
+				let contentType = response.headers.get("content-type");
+				if (contentType && contentType.includes("application/json")) {
+					return response.json();
+				}
+				throw new TypeError("Oops, we haven't got JSON!");
+			})
+			.then(function (json) {
+				let textLinks = generateLinks(json);
+				document.querySelector('#links').innerHTML = textLinks['links'];
+				document.querySelector('#linksAdd').innerHTML = textLinks['linksAdd'];
+				document.querySelector('#linksDelete').innerHTML = textLinks['linksDelete'];
+			})
+			.catch(function (error) {
+				let txt = "Links fetch error:' " + error + " '";
+				console.error(txt);
+				alert(txt);
+			});
+		// GET things ====================================================================================
+		fetch(document.location.origin + '/rest/things')
+			.then((response) => {
+				let contentType = response.headers.get("content-type");
+				if (contentType && contentType.includes("application/json")) {
+					return response.json();
+				}
+				throw new TypeError("Oops, we haven't got JSON!");
+			})
+			.then(function (json) {
+				let textThings = generateThings(json);
+/*				document.querySelector('#links').innerHTML = textLinks['links'];
+				document.querySelector('#linksAdd').innerHTML = textLinks['linksAdd'];
+				document.querySelector('#linksDelete').innerHTML = textLinks['linksDelete'];
+*/
+			})
+			.catch(function (error) {
+				let txt = "Things fetch error:' " + error + " '";
+				console.error(txt);
+				alert(txt);
+			});
+	</script>
+</body>
+
+</html>
