@@ -16,7 +16,7 @@ The boring stuff: <b>"Use it at your own risk!"</b> I have +200 <i>items</i> and
 </div>
 
 <h2>Installation:</h2>
-Download .7z and extract to /srv/openhab2-conf/html<br>
+Copy the files in html to /srv/openhab2-conf/html on your openhab machine.<br>
 Careful if you already have an index.html<br>
 You can access the exporter via: http://openhabianpi:8080/static/exporter/<br>
 The script does not change anything in OH and cannot break anything. The magic happens when you (manually and easily) import the data again.
